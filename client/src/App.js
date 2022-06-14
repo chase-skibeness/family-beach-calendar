@@ -1,28 +1,91 @@
 import './App.css';
+import { useEffect, useState } from 'react';
+import { isMobile } from 'react-device-detect';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
-import interactionPlugin from '@fullcalendar/interaction';
+import listPlugin from '@fullcalendar/list';
+import Container from 'react-bootstrap/Container';
+import LoadingSpinner from 'react-bootstrap/Spinner';
+import Alert from 'react-bootstrap/Alert';
+import Button from 'react-bootstrap/Button';
+import Modal from 'react-bootstrap/Modal';
+import BookingForm from './BookingForm';
 
 function App() {
-  const handleDateClick = (arg) => {
-    console.log(arg.dateStr);
-  };
+  const [bookings, setBookings] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [show, setShow] = useState(false);
+
+  const URL = 'http://localhost:30000/api/bookings';
+
+  useEffect(() => {
+    fetch(URL)
+      .then((res) => {
+        if (!res.ok) throw new Error(`This is an HTTP error: The status is ${res.status}`);
+        return res.json();
+      })
+      .then((result) => {
+        setBookings(result);
+        setError(null);
+      })
+      .catch((err) => {
+        console.error(err);
+        setError(err.message);
+        setBookings(null);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, []);
+
+  function bookingsToEvents(bookings) {
+    return (
+      bookings &&
+      bookings.map((booking) => {
+        return {
+          id: booking._id,
+          start: booking.start_date,
+          end: booking.end_date,
+          title:
+            `${booking.name}` +
+            (booking.guest_count > 0 ? ` and ${booking.guest_count} guests` : ''),
+          allDay: true
+        };
+      })
+    );
+  }
+
+  const handleClose = () => setShow(false);
+  const handleShow = () => setShow(true);
 
   return (
     <div className="App">
-      <div className="Container FormContainer">
-        <header>
-          <h1>Hello World</h1>
-        </header>
-      </div>
-      <div className="Container CalendarContainer">
+      <Container fluid className="CalendarContainer">
+        <h1>Family Beach Calendar</h1>
+        {loading && (
+          <LoadingSpinner animation="border" role="status">
+            <span className="visually-hidden">Loading...</span>
+          </LoadingSpinner>
+        )}
+        {error && (
+          <Alert variant={'danger'}>
+            There was a problem gathering the data, please refresh the page.
+          </Alert>
+        )}
+        <Button variant="primary" onClick={handleShow}>
+          Book the Beach
+        </Button>
+        <Modal show={show} onHide={handleClose} backdrop="static" centered>
+          <BookingForm handleClose={handleClose} />
+        </Modal>
         <FullCalendar
-          plugins={[dayGridPlugin, interactionPlugin]}
-          initialView="dayGridMonth"
-          dateClick={handleDateClick}
-          events={[{ title: 'event 1', date: '2022-06-01' }]}
+          initialView={isMobile ? 'listMonth' : 'dayGridMonth'}
+          plugins={[dayGridPlugin, listPlugin]}
+          events={bookingsToEvents(bookings)}
+          height="100%"
         />
-      </div>
+      </Container>
     </div>
   );
 }
