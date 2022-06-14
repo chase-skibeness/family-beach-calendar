@@ -4,12 +4,14 @@ import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import PropTypes from 'prop-types';
 import Spinner from 'react-bootstrap/Spinner';
+import Alert from 'react-bootstrap/Alert';
 
 function BookingForm({ handleClose }) {
   const [validated, setValidated] = useState(false);
   const [loading, setLoading] = useState(false);
   const [, setSuccess] = useState();
   const [message, setMessage] = useState();
+  const [alertStatus, setAlertStatus] = useState();
   const [newBooking, setNewBooking] = useState({
     name: null,
     start_date: null,
@@ -25,16 +27,26 @@ function BookingForm({ handleClose }) {
     if (form.checkValidity() === false) {
       event.preventDefault();
       event.stopPropagation();
+      setMessage('Please fill out all required fields.');
+      setAlertStatus('warning');
+      return;
     }
+
+    setValidated(true);
+    event.preventDefault();
+    setLoading(true);
     newBooking.private_stay = newBooking.private_stay === 'on' ? true : false;
     newBooking.start_date = new Date(newBooking.start_date);
     newBooking.end_date = new Date(newBooking.end_date);
-    setValidated(true);
-    setLoading(true);
-    event.preventDefault();
     try {
       let res = await fetch(URL, {
         method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+          'Access-Control-Allow-Origin': '*',
+          'Accept-Encoding': 'gzip, deflate, sdch'
+        },
         body: JSON.stringify(newBooking)
       });
       if (res.status === 200) {
@@ -47,11 +59,16 @@ function BookingForm({ handleClose }) {
           guest_count: 0,
           private_stay: false
         });
+        setAlertStatus('success');
         setMessage('Booking created successfully!');
+        setTimeout(handleClose, 2000);
       } else {
         setSuccess(false);
         setLoading(false);
-        setMessage('There was a problem creating your booking');
+        setAlertStatus('danger');
+        setMessage(
+          'There was a problem creating your booking, please refresh the page and try again.'
+        );
       }
     } catch (err) {
       console.error(err);
@@ -105,12 +122,15 @@ function BookingForm({ handleClose }) {
         </Form.Group>
       </Modal.Body>
       <Modal.Footer>
+        <Alert variant={alertStatus} show={message || loading ? true : false}>
+          {loading ? <Spinner animation="border" role="status" as="span" size="sm" /> : ''}
+          {message ? message : ''}
+        </Alert>
         <Button variant="secondary" onClick={handleClose}>
           Close
         </Button>
         <Button variant="primary" type="submit">
-          {loading ? <Spinner animation="border" role="status" as="span" size="sm" /> : 'Submit'}
-          {message ? message : ''}
+          Submit
         </Button>
       </Modal.Footer>
     </Form>
