@@ -1,6 +1,6 @@
 import './App.css';
 import { useEffect, useState } from 'react';
-import { isMobile } from 'react-device-detect';
+import { useMediaQuery } from 'react-responsive';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import listPlugin from '@fullcalendar/list';
@@ -18,6 +18,8 @@ function App() {
   const [show, setShow] = useState(false);
 
   const URL = 'http://localhost:30000/api/bookings';
+
+  const isMobileScreen = useMediaQuery({ query: '(max-width: 800px)' });
 
   useEffect(() => {
     fetch(URL)
@@ -37,7 +39,7 @@ function App() {
       .finally(() => {
         setLoading(false);
       });
-  }, []);
+  }, [show]);
 
   function bookingsToEvents(bookings) {
     return (
@@ -80,7 +82,7 @@ function App() {
           <BookingForm handleClose={handleClose} />
         </Modal>
         <FullCalendar
-          initialView={isMobile ? 'listMonth' : 'dayGridMonth'}
+          initialView={isMobileScreen ? 'listMonth' : 'dayGridMonth'}
           plugins={[dayGridPlugin, listPlugin]}
           events={bookingsToEvents(bookings)}
           height="100%"
