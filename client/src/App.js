@@ -17,7 +17,7 @@ function App() {
   const [error, setError] = useState(null);
   const [show, setShow] = useState(false);
 
-  const URL = 'http://localhost:30000/api/bookings';
+  const URL = process.env.REACT_APP_URL;
 
   const isMobileScreen = useMediaQuery({ query: '(max-width: 800px)' });
 

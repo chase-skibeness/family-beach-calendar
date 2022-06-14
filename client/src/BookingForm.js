@@ -20,7 +20,7 @@ function BookingForm({ handleClose }) {
     private_stay: false
   });
 
-  const URL = 'http://localhost:30000/api/bookings';
+  const URL = process.env.REACT_APP_URL;
 
   const handleSubmit = async (event) => {
     const form = event.currentTarget;
