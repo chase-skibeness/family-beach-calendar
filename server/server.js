@@ -14,7 +14,7 @@ app.use(cors({ origin: true, credentials: true }))
 
 app.use(express.json({ extended: false }))
 
-app.use('/api/booking', bookingRoutes)
+app.use('/api/bookings', bookingRoutes)
 
 const PORT = process.env.PORT || 30000
 

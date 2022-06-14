@@ -11,10 +11,13 @@ const BookingSchema = new mongoose.Schema({
     },
     end_date: {
         type: 'Date',
-        requierd: true,
+        required: true,
     },
     guest_count: {
         type: 'Number',
+    },
+    private_stay: {
+        type: 'Boolean'
     },
 })
 
