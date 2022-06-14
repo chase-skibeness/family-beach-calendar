@@ -18,8 +18,6 @@ app.use('/api/bookings', bookingRoutes)
 
 const PORT = process.env.PORT || 30000
 
-app.listen(PORT, () => {
-    console.log(`server is running on http://localhost:${PORT}`)
-})
+app.listen(PORT, () => {})
 
 module.exports = app
