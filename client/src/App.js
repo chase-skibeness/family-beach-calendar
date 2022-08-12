@@ -86,9 +86,7 @@ function App() {
       <Container fluid>
         <Navbar>
           <Container className="Navbar Container">
-            <Navbar.Brand>
-              <h1>Skibeness Family Beach Calendar</h1>
-            </Navbar.Brand>
+            <Navbar.Brand>Skibeness Beach Calendar</Navbar.Brand>
             <Navbar.Toggle />
             <Navbar.Collapse className="justify-content-end">
               {loading && (

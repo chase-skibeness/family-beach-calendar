@@ -6,7 +6,7 @@ import PropTypes from 'prop-types';
 import Spinner from 'react-bootstrap/Spinner';
 import Alert from 'react-bootstrap/Alert';
 
-function BookingForm({ handleClose, selectedDates }) {
+function BookingForm({ handleClose, selectedDates = { start: '', end: '' } }) {
   const [validated, setValidated] = useState(false);
   const [loading, setLoading] = useState(false);
   const [, setSuccess] = useState();
