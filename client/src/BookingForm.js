@@ -6,7 +6,7 @@ import PropTypes from 'prop-types';
 import Spinner from 'react-bootstrap/Spinner';
 import Alert from 'react-bootstrap/Alert';
 
-function BookingForm({ handleClose }) {
+function BookingForm({ handleClose, selectedDates }) {
   const [validated, setValidated] = useState(false);
   const [loading, setLoading] = useState(false);
   const [, setSuccess] = useState();
@@ -89,36 +89,43 @@ function BookingForm({ handleClose }) {
             required
             onChange={(e) => setNewBooking({ ...newBooking, name: e.target.value })}
           />
+          <br />
           <Form.Label>How many guests will you have with you?</Form.Label>
           <Form.Control
             type="number"
             defaultValue="0"
             onChange={(e) => setNewBooking({ ...newBooking, guest_count: e.target.value })}
           />
+          <br />
         </Form.Group>
         <hr />
         <Form.Group>
           <Form.Label>When will you be there?</Form.Label>
-          <Form.Control
-            type="date"
-            required
-            onChange={(e) => setNewBooking({ ...newBooking, start_date: e.target.value })}
-          />
+          <br />
           <Form.Text className="text-muted">Start Date</Form.Text>
           <Form.Control
             type="date"
             required
+            defaultValue={selectedDates.start}
+            onChange={(e) => setNewBooking({ ...newBooking, start_date: e.target.value })}
+          />
+          <br />
+          <Form.Text className="text-muted">End Date</Form.Text>
+          <Form.Control
+            type="date"
+            required
+            defaultValue={selectedDates.end}
             onChange={(e) => setNewBooking({ ...newBooking, end_date: e.target.value })}
           />
-          <Form.Text className="text-muted">End Date</Form.Text>
         </Form.Group>
+        <br />
         <hr />
-        <Form.Group>
-          <Form.Label>I would like to be there privately</Form.Label>
+        <Form.Group className="privateCheckbox">
           <Form.Check
             type="checkbox"
             onChange={(e) => setNewBooking({ ...newBooking, private_stay: e.target.value })}
           />
+          <Form.Label>I would like to be there privately</Form.Label>
         </Form.Group>
       </Modal.Body>
       <Modal.Footer>
@@ -138,7 +145,8 @@ function BookingForm({ handleClose }) {
 }
 
 BookingForm.propTypes = {
-  handleClose: PropTypes.func.isRequired
+  handleClose: PropTypes.func.isRequired,
+  selectedDates: PropTypes.object
 };
 
 export default BookingForm;

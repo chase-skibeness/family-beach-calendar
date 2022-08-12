@@ -1,21 +1,27 @@
-import './App.css';
 import { useEffect, useState } from 'react';
 import { useMediaQuery } from 'react-responsive';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import listPlugin from '@fullcalendar/list';
+import interactionPlugin from '@fullcalendar/interaction';
+import bootstrap5Plugin from '@fullcalendar/bootstrap5';
 import Container from 'react-bootstrap/Container';
 import LoadingSpinner from 'react-bootstrap/Spinner';
 import Alert from 'react-bootstrap/Alert';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
+import Navbar from 'react-bootstrap/Navbar';
 import BookingForm from './BookingForm';
+import 'bootstrap/dist/css/bootstrap.css';
+import 'bootstrap-icons/font/bootstrap-icons.css';
+import moment from 'moment';
 
 function App() {
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [show, setShow] = useState(false);
+  const [selectedDates, setSelectedDates] = useState();
 
   const URL = process.env.REACT_APP_URL;
 
@@ -61,32 +67,56 @@ function App() {
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
 
+  function handleDateSelect(info) {
+    console.log(info);
+    const dates = {
+      start: moment(info.start).format('YYYY-MM-DD'),
+      end: moment(info.end).subtract(1, 'days').format('YYYY-MM-DD')
+    };
+    console.log(dates);
+    setSelectedDates(dates);
+    handleShow();
+  }
+
   return (
     <div className="App">
-      <Container fluid className="CalendarContainer">
-        <h1>Family Beach Calendar</h1>
-        {loading && (
-          <LoadingSpinner animation="border" role="status">
-            <span className="visually-hidden">Loading...</span>
-          </LoadingSpinner>
-        )}
-        {error && (
-          <Alert variant={'danger'}>
-            There was a problem gathering the data, please refresh the page.
-          </Alert>
-        )}
-        <Button variant="primary" onClick={handleShow}>
-          Book the Beach
-        </Button>
+      <Container fluid>
+        <Navbar>
+          <Container className="Navbar Container">
+            <Navbar.Brand>
+              <h1>Family Beach Calendar</h1>
+            </Navbar.Brand>
+            <Navbar.Toggle />
+            <Navbar.Collapse className="justify-content-end">
+              {loading && (
+                <LoadingSpinner animation="border" role="status">
+                  <span className="visually-hidden">Loading...</span>
+                </LoadingSpinner>
+              )}
+              {error && (
+                <Alert variant={'danger'}>
+                  There was a problem gathering the data, please refresh the page.
+                </Alert>
+              )}
+              <Button variant="primary" onClick={handleShow} className="bookButton">
+                {isMobileScreen ? <i className="bi bi-calendar-plus"></i> : 'Book the Beach'}
+              </Button>
+            </Navbar.Collapse>
+          </Container>
+        </Navbar>
         <Modal show={show} onHide={handleClose} backdrop="static" centered>
-          <BookingForm handleClose={handleClose} />
+          <BookingForm handleClose={handleClose} selectedDates={selectedDates} />
         </Modal>
-        <FullCalendar
-          initialView={isMobileScreen ? 'listMonth' : 'dayGridMonth'}
-          plugins={[dayGridPlugin, listPlugin]}
-          events={bookingsToEvents(bookings)}
-          height="100%"
-        />
+        <Container className="CalendarContainer">
+          <FullCalendar
+            initialView={isMobileScreen ? 'listMonth' : 'dayGridMonth'}
+            plugins={[dayGridPlugin, listPlugin, bootstrap5Plugin, interactionPlugin]}
+            events={bookingsToEvents(bookings)}
+            themeSystem="bootstrap5"
+            selectable="true"
+            select={handleDateSelect}
+          />
+        </Container>
       </Container>
     </div>
   );

@@ -48,3 +48,11 @@ h6 {
 #__next {
     isolation: isolate;
 }
+
+.privateCheckbox {
+    display: flex;
+}
+
+.privateCheckbox .form-label {
+    margin-left: 1rem;
+}
