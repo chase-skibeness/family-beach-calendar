@@ -68,14 +68,15 @@ function App() {
   const handleShow = () => setShow(true);
 
   function handleDateSelect(info) {
-    console.log(info);
-    const dates = {
+    setSelectedDates({
       start: moment(info.start).format('YYYY-MM-DD'),
       end: moment(info.end).subtract(1, 'days').format('YYYY-MM-DD')
-    };
-    console.log(dates);
-    setSelectedDates(dates);
+    });
     handleShow();
+  }
+
+  function handleUnselect() {
+    setSelectedDates({ start: '', end: '' });
   }
 
   return (
@@ -84,7 +85,7 @@ function App() {
         <Navbar>
           <Container className="Navbar Container">
             <Navbar.Brand>
-              <h1>Family Beach Calendar</h1>
+              <h1>Skibeness Family Beach Calendar</h1>
             </Navbar.Brand>
             <Navbar.Toggle />
             <Navbar.Collapse className="justify-content-end">
@@ -115,6 +116,7 @@ function App() {
             themeSystem="bootstrap5"
             selectable="true"
             select={handleDateSelect}
+            unselect={handleUnselect}
           />
         </Container>
       </Container>
