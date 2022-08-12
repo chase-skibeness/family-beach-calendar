@@ -69,8 +69,10 @@ function App() {
 
   function handleDateSelect(info) {
     setSelectedDates({
-      start: moment(info.start).format('YYYY-MM-DD'),
-      end: moment(info.end).subtract(1, 'days').format('YYYY-MM-DD')
+      start: info.start,
+      end: info.end,
+      startStr: moment(info.start).format('YYYY-MM-DD'),
+      endStr: moment(info.end).subtract(1, 'days').format('YYYY-MM-DD')
     });
     handleShow();
   }

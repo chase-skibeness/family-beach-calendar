@@ -14,8 +14,8 @@ function BookingForm({ handleClose, selectedDates }) {
   const [alertStatus, setAlertStatus] = useState();
   const [newBooking, setNewBooking] = useState({
     name: null,
-    start_date: null,
-    end_date: null,
+    start_date: selectedDates.start,
+    end_date: selectedDates.end,
     guest_count: 0,
     private_stay: false
   });
@@ -106,7 +106,7 @@ function BookingForm({ handleClose, selectedDates }) {
           <Form.Control
             type="date"
             required
-            defaultValue={selectedDates.start}
+            defaultValue={selectedDates.startStr}
             onChange={(e) => setNewBooking({ ...newBooking, start_date: e.target.value })}
           />
           <br />
@@ -114,7 +114,7 @@ function BookingForm({ handleClose, selectedDates }) {
           <Form.Control
             type="date"
             required
-            defaultValue={selectedDates.end}
+            defaultValue={selectedDates.endStr}
             onChange={(e) => setNewBooking({ ...newBooking, end_date: e.target.value })}
           />
         </Form.Group>
