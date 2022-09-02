@@ -85,7 +85,7 @@ function App() {
     <div className="App">
       <Container fluid>
         <Navbar>
-          <Container className="Navbar Container">
+          <Container className="NavbarContainer">
             <Navbar.Brand>Skibeness Beach Calendar</Navbar.Brand>
             <Navbar.Toggle />
             <Navbar.Collapse className="justify-content-end">
@@ -117,6 +117,7 @@ function App() {
             selectable="true"
             select={handleDateSelect}
             unselect={handleUnselect}
+            height={'100%'}
           />
         </Container>
       </Container>
