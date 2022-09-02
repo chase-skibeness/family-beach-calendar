@@ -35,22 +35,6 @@ function useTides({ startDate, endDate }) {
     fetchTideData();
   }, []);
 
-  console.log(tideInfo);
-
-  /*   const tidiedTideInfo = {
-    HighTide: tideInfo.predictions.reduce((previousTidePrediction, currentTidePrediction) => {
-      console.log(currentTidePrediction.v);
-      parseFloat(currentTidePrediction['v']) > parseFloat(previousTidePrediction['v'])
-        ? currentTidePrediction
-        : previousTidePrediction;
-    }, tideInfo.predictions[0]),
-    LowTide: tideInfo.predictions.reduce((previousTidePrediction, currentTidePrediction) => {
-      parseFloat(currentTidePrediction['v']) < parseFloat(previousTidePrediction['v'])
-        ? currentTidePrediction
-        : previousTidePrediction;
-    }, tideInfo.predictions[0])
-  }; */
-
   const tidiedTideInfo = {
     lowTide: tideInfo.predictions.sort(
       (prevTidePrediction, nextTidePrediction) =>
