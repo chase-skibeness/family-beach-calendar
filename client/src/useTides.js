@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 
 function useTides({ startDate, endDate }) {
-  const [tideInfo, setTideInfo] = useState(null);
+  const [tideInfo, setTideInfo] = useState({ predictions: [] });
   const tideBaseURL =
     'https://api.tidesandcurrents.noaa.gov/api/prod/datagetter?product=predictions&datum=MLLW&station=9446583&time_zone=lst_ldt&units=english&interval=hilo&format=json&application=NOS.COOPS.TAC.TidePred';
 
@@ -35,7 +35,34 @@ function useTides({ startDate, endDate }) {
     fetchTideData();
   }, []);
 
-  return tideInfo;
+  console.log(tideInfo);
+
+  /*   const tidiedTideInfo = {
+    HighTide: tideInfo.predictions.reduce((previousTidePrediction, currentTidePrediction) => {
+      console.log(currentTidePrediction.v);
+      parseFloat(currentTidePrediction['v']) > parseFloat(previousTidePrediction['v'])
+        ? currentTidePrediction
+        : previousTidePrediction;
+    }, tideInfo.predictions[0]),
+    LowTide: tideInfo.predictions.reduce((previousTidePrediction, currentTidePrediction) => {
+      parseFloat(currentTidePrediction['v']) < parseFloat(previousTidePrediction['v'])
+        ? currentTidePrediction
+        : previousTidePrediction;
+    }, tideInfo.predictions[0])
+  }; */
+
+  const tidiedTideInfo = {
+    lowTide: tideInfo.predictions.sort(
+      (prevTidePrediction, nextTidePrediction) =>
+        parseFloat(prevTidePrediction.v) - parseFloat(nextTidePrediction.v)
+    )[0],
+    highTide: tideInfo.predictions.sort(
+      (prevTidePrediction, nextTidePrediction) =>
+        parseFloat(nextTidePrediction.v) - parseFloat(prevTidePrediction.v)
+    )[0]
+  };
+
+  return tidiedTideInfo;
 }
 
 export default useTides;
