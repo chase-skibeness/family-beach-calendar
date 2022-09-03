@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useMediaQuery } from 'react-responsive';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
@@ -15,17 +15,22 @@ import BookingForm from './BookingForm';
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import moment from 'moment';
+import useTides from './useTides';
 
 function App() {
   const [bookings, setBookings] = useState([]);
+  const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [show, setShow] = useState(false);
   const [selectedDates, setSelectedDates] = useState();
-
+  const calendarRef = useRef(null);
+  // eslint-disable-next-line no-undef
   const URL = process.env.REACT_APP_URL;
-
   const isMobileScreen = useMediaQuery({ query: '(max-width: 800px)' });
+
+  let today = moment();
+  let tides = getTidesForYear(today);
 
   useEffect(() => {
     fetch(URL)
@@ -47,6 +52,37 @@ function App() {
       });
   }, [show]);
 
+  useEffect(() => {
+    getEvents();
+  }, [bookings]);
+
+  function getTidesForYear(date) {
+    return useTides({
+      startDate: `${date.format('YYYY')}0101`,
+      endDate: `${date.format('YYYY')}1231`
+    });
+  }
+
+  function tidesToEvents(tides) {
+    const tideEvents = tides
+      .map((tide) => {
+        return [
+          {
+            start: new Date(tide.lowTide.t).toISOString(),
+            end: new Date(tide.lowTide.t).toISOString(),
+            title: `Low Tide: ${tide.lowTide.v}`
+          },
+          {
+            start: new Date(tide.highTide.t).toISOString(),
+            end: new Date(tide.highTide.t).toISOString(),
+            title: `High Tide: ${tide.highTide.v}`
+          }
+        ];
+      })
+      .flat();
+    return tideEvents;
+  }
+
   function bookingsToEvents(bookings) {
     return (
       bookings &&
@@ -62,6 +98,13 @@ function App() {
         };
       })
     );
+  }
+
+  function getEvents() {
+    const newEvents = [];
+    newEvents.push(tidesToEvents(tides));
+    newEvents.push(bookingsToEvents(bookings));
+    setEvents(newEvents.flat());
   }
 
   const handleClose = () => setShow(false);
@@ -110,9 +153,10 @@ function App() {
         </Modal>
         <Container className="CalendarContainer">
           <FullCalendar
+            ref={calendarRef}
             initialView={isMobileScreen ? 'listMonth' : 'dayGridMonth'}
             plugins={[dayGridPlugin, listPlugin, bootstrap5Plugin, interactionPlugin]}
-            events={bookingsToEvents(bookings)}
+            events={events}
             themeSystem="bootstrap5"
             selectable="true"
             select={handleDateSelect}
