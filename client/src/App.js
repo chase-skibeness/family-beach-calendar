@@ -26,8 +26,12 @@ function App() {
   const [selectedDates, setSelectedDates] = useState();
   const calendarRef = useRef(null);
   // eslint-disable-next-line no-undef
-  const URL = process.env.REACT_APP_URL;
+  const URL = process.env.BOOKING_BACKEND_URI || 'http://localhost:30000/api/bookings';
   const isMobileScreen = useMediaQuery({ query: '(max-width: 800px)' });
+
+  if (!URL) {
+    console.error('Missing env variables');
+  }
 
   let today = moment();
   let tides = getTidesForYear(today);
